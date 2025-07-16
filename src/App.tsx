@@ -1,35 +1,101 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { IoAddCircleSharp } from "react-icons/io5";
+import { MdDelete } from "react-icons/md";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+// render todo item in jsx
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+type Todo = {
+  task: string;
+  completed: boolean;
 }
 
-export default App
+function App() {
+  const [todoItem, setTodoItem] = useState<Todo[]>([
+    // { task: "Wash dishes", completed: false },
+    // { task: "Walk the dog", completed: false },
+    // { task: "Clean the house", completed: false },
+  ]);
+
+  function addTodo(formData: FormData) {
+    const newTodo = formData.get("todo-input");
+    if (newTodo && typeof newTodo === 'string') {
+      setTodoItem((prev) => {
+        return [...prev, { task: newTodo, completed: false }];
+      });
+    }
+  }
+
+  function toggleTodo(e: React.ChangeEvent<HTMLInputElement>, index: number) {
+    const checkedStatus = e.currentTarget.checked;
+    setTodoItem((prev) => {
+      return prev.map((todo, i) => {
+        if (i == index) return { ...todo, completed: checkedStatus };
+        return todo;
+      });
+    });
+  }
+
+  // useEffect(() => {
+  //   console.log("item", todoItem);
+  // }, [todoItem]);
+
+  function deleteTodo(index: number) {
+    setTodoItem((prev) => {
+      return prev.filter((_, i) => {
+        return i !== index
+      });
+    });
+  }
+
+  const todoItemsList = todoItem.map((todo, index) => (
+    <div className="flex justify-between" key={index}>
+      <div className="mb-4">
+        <input
+          aria-checked={todo.completed}
+          checked={todo.completed}
+          onChange={(e) => toggleTodo(e, index)}
+          type="checkbox"
+          id={`todo-${index}`}
+          name={`todo`}
+        />
+        <label
+          className={`ml-4 ${
+            todo.completed ? "line-through text-gray-500" : ""
+          }`}
+          htmlFor={`todo-${index}`}
+        >
+          {todo.task}
+        </label>
+      </div>
+      <button className="cursor-pointer" onClick={() => deleteTodo(index)} aria-label="delete task">
+        <MdDelete className="inline-block text-red-700" size={24} />
+      </button>
+    </div>
+  ));
+
+  return (
+    <main>
+      <h1 className="mb-4">Todos</h1>
+      <form
+        action={addTodo}
+        className="shadow-2xl bg-zinc-700 rounded-3xl px-6 py-2 flex justify-between mb-6"
+      >
+        <input
+          className="w-full"
+          id="todo-input"
+          name="todo-input"
+          type="text"
+          placeholder="Add todo..."
+          aria-label="Add a task"
+        />
+        <button aria-label="Add task" className="text-[#065892]">
+          <IoAddCircleSharp size={24} />
+        </button>
+      </form>
+      <section id="todo-list">{todoItemsList}</section>
+    </main>
+  );
+}
+
+export default App;
