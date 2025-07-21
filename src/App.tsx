@@ -3,18 +3,20 @@ import { IoAddCircleSharp } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
 import "./App.css";
 
+// Add localstorage
+// Add edit task functionality
+
 type Todo = {
   task: string;
   completed: boolean;
-}
+};
 
 function App() {
-  const [todoItem, setTodoItem] = useState<Todo[]>([
-  ]);
+  const [todoItem, setTodoItem] = useState<Todo[]>([]);
 
   function addTodo(formData: FormData) {
     const newTodo = formData.get("todo-input");
-    if (newTodo && typeof newTodo === 'string') {
+    if (newTodo && typeof newTodo === "string") {
       setTodoItem((prev) => {
         return [...prev, { task: newTodo, completed: false }];
       });
@@ -31,14 +33,10 @@ function App() {
     });
   }
 
-  // useEffect(() => {
-  //   console.log("item", todoItem);
-  // }, [todoItem]);
-
   function deleteTodo(index: number) {
     setTodoItem((prev) => {
       return prev.filter((_, i) => {
-        return i !== index
+        return i !== index;
       });
     });
   }
@@ -63,7 +61,11 @@ function App() {
           {todo.task}
         </label>
       </div>
-      <button className="cursor-pointer" onClick={() => deleteTodo(index)} aria-label="delete task">
+      <button
+        className="cursor-pointer"
+        onClick={() => deleteTodo(index)}
+        aria-label="delete task"
+      >
         <MdDelete className="inline-block text-red-700" size={24} />
       </button>
     </div>
